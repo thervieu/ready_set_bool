@@ -21,11 +21,11 @@ func NewAstNode(item string) *AstNode {
 }
 
 func (node *AstNode) ParseFormula(formula *string) {
-	operand := "!&|^>="
+	operands := "!&|^>="
 	node.Item = string((*formula)[len(*formula)-1])
 	*formula = (*formula)[:len(*formula)-1]
 
-	if strings.ContainsRune(operand, rune(node.Item[0])) {
+	if strings.ContainsRune(operands, rune(node.Item[0])) {
 		if node.Item != "!" {
 			node.RightLeaf = NewAstNode("0")
 			node.RightLeaf.ParseFormula(formula)

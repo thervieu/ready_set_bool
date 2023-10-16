@@ -7,12 +7,12 @@ import (
 )
 
 type AstNode struct {
-	Item      byte
+	Item      string
 	LeftLeaf  *AstNode
 	RightLeaf *AstNode
 }
 
-func NewAstNode(item byte) *AstNode {
+func NewAstNode(item string) *AstNode {
 	return &AstNode{
 		Item:      item,
 		LeftLeaf:  nil,
@@ -20,17 +20,17 @@ func NewAstNode(item byte) *AstNode {
 	}
 }
 
-func (node *AstNode) ParseFormula(formula *[]byte) {
-	operand := []byte{'!', '&', '|', '^', '>', '='}
-	node.Item = (*formula)[len(*formula)-1]
+func (node *AstNode) ParseFormula(formula *string) {
+	operands := "!&|^>="
+	node.Item = string((*formula)[len(*formula)-1])
 	*formula = (*formula)[:len(*formula)-1]
 
-	if bytesContain(operand, node.Item) {
-		node.LeftLeaf = NewAstNode('0')
-		if node.Item != '!' {
-			node.RightLeaf = NewAstNode('0')
+	if strings.ContainsRune(operands, rune(node.Item[0])) {
+		if node.Item != "!" {
+			node.RightLeaf = NewAstNode("0")
 			node.RightLeaf.ParseFormula(formula)
 		}
+		node.LeftLeaf = NewAstNode("0")
 		node.LeftLeaf.ParseFormula(formula)
 	}
 }
@@ -46,7 +46,7 @@ func bytesContain(slice []byte, item byte) bool {
 
 func (node *AstNode) IsIn(haystack string) bool {
 	for _, c := range haystack {
-		if byte(c) == node.Item {
+		if node.Item[0] == byte(c) {
 			return true
 		}
 	}
@@ -72,30 +72,30 @@ func (node *AstNode) NegationNormalForm() {
 		node.RightLeaf.NegationNormalForm()
 	}
 
-	if node.Item == '!' && node.LeftLeaf.IsIn("&|") {
+	if node.Item == "!" && node.LeftLeaf.IsIn("&|") {
 		rightCopy := node.LeftLeaf.RightLeaf
-		if node.LeftLeaf.Item == '|' {
-			node.Item = '&'
+		if node.LeftLeaf.Item == "|" {
+			node.Item = "&"
 		} else {
-			node.Item = '|'
+			node.Item = "|"
 		}
 
-		node.LeftLeaf.Item = '!'
+		node.LeftLeaf.Item = "!"
 		node.LeftLeaf.RightLeaf = nil
 
-		node.RightLeaf = NewAstNode('!')
+		node.RightLeaf = NewAstNode("!")
 		node.RightLeaf.LeftLeaf = rightCopy
 
 		node.NegationNormalForm()
 	}
 
-	if node.Item == '=' {
-		node.Item = '&'
+	if node.Item == "=" {
+		node.Item = "&"
 		aCopy := node.LeftLeaf
 		bCopy := node.RightLeaf
 
-		node.LeftLeaf = NewAstNode('>')
-		node.RightLeaf = NewAstNode('>')
+		node.LeftLeaf = NewAstNode(">")
+		node.RightLeaf = NewAstNode(">")
 
 		node.LeftLeaf.LeftLeaf = aCopy.Clone()
 		node.LeftLeaf.RightLeaf = bCopy.Clone()
@@ -106,30 +106,30 @@ func (node *AstNode) NegationNormalForm() {
 		node.NegationNormalForm()
 	}
 
-	if node.Item == '^' {
-		node.Item = '|'
+	if node.Item == "^" {
+		node.Item = "|"
 		aCopy := node.LeftLeaf
 		bCopy := node.RightLeaf
 
-		node.LeftLeaf = NewAstNode('&')
-		node.RightLeaf = NewAstNode('&')
+		node.LeftLeaf = NewAstNode("&")
+		node.RightLeaf = NewAstNode("&")
 
-		node.LeftLeaf.RightLeaf = NewAstNode('!')
+		node.LeftLeaf.RightLeaf = NewAstNode("!")
 		node.LeftLeaf.RightLeaf.LeftLeaf = bCopy.Clone()
 		node.LeftLeaf.LeftLeaf = aCopy.Clone()
 
-		node.RightLeaf.LeftLeaf = NewAstNode('!')
+		node.RightLeaf.LeftLeaf = NewAstNode("!")
 		node.RightLeaf.LeftLeaf.LeftLeaf = aCopy.Clone()
 		node.RightLeaf.RightLeaf = bCopy.Clone()
 
 		node.NegationNormalForm()
 	}
 
-	if node.Item == '>' {
+	if node.Item == ">" {
 		leftCopy := node.LeftLeaf
-		node.Item = '|'
+		node.Item = "|"
 
-		node.LeftLeaf = NewAstNode('!')
+		node.LeftLeaf = NewAstNode("!")
 		node.LeftLeaf.LeftLeaf = leftCopy
 
 		node.NegationNormalForm()
@@ -140,19 +140,19 @@ func (node *AstNode) Compute(sets [][]int, superset []int) []int {
 	var result []int
 
 	if !strings.Contains("&|!", string(node.Item)) {
-		result = sets[int(node.Item-'A')]
-	} else if node.Item == '!' {
+		result = sets[int(byte(node.Item[0])-'A')]
+	} else if node.Item == "!" {
 		for _, element := range superset {
 			if !intSliceContains(node.LeftLeaf.Compute(sets, superset), element) {
 				result = append(result, element)
 			}
 		}
-	} else if node.Item == '|' {
+	} else if node.Item == "|" {
 		set := make(map[int]struct{})
 		setSlice(set, node.LeftLeaf.Compute(sets, superset))
 		setSlice(set, node.RightLeaf.Compute(sets, superset))
 		result = setToSlice(set)
-	} else if node.Item == '&' {
+	} else if node.Item == "&" {
 		for _, x := range node.LeftLeaf.Compute(sets, superset) {
 			if intSliceContains(node.RightLeaf.Compute(sets, superset), x) {
 				result = append(result, x)
@@ -209,8 +209,8 @@ func EvalSet(formula string, sets [][]int) []int {
 		panic("The formula and sets provided are not compatible")
 	}
 
-	formulaStack := []byte(formula)
-	root := NewAstNode('0')
+	formulaStack := string(formula)
+	root := NewAstNode("0")
 	root.ParseFormula(&formulaStack)
 	root.NegationNormalForm()
 	return root.Compute(sets, GetSuperset(sets))
