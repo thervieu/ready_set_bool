@@ -86,15 +86,6 @@ func boolToInt(a bool) int {
 func evaluateTruthTable(s string, variables []string) (bool, error) {
 	numVars := len(variables)
 
-	for _, v := range variables {
-		fmt.Printf("| %s ", v)
-	}
-	fmt.Print("| = |\n")
-	for i := 0; i <= len(variables); i++ {
-		fmt.Print("|---")
-	}
-	fmt.Print("|\n")
-
 	truthTable := make([]map[string]bool, 1<<uint(numVars))
 	for i := 0; i < len(truthTable); i++ {
 		truthTable[i] = make(map[string]bool)
@@ -168,5 +159,29 @@ func main() {
 		fmt.Printf("Error: %v\n", err)
 		return
 	}
-	fmt.Printf("%t\n", truth)
+	fmt.Println("str:", expression, "; sat:", truth)
+	fmt.Println()
+
+	expression = "AB|"
+	variables = extractVariables(expression)
+	truth, _ = evaluateTruthTable(expression, variables)
+	fmt.Println("str:", expression, "; sat:", truth)
+	fmt.Println()
+
+	expression = "AB&"
+	variables = extractVariables(expression)
+	truth, _ = evaluateTruthTable(expression, variables)
+	fmt.Println("str:", expression, "; sat:", truth)
+	fmt.Println()
+
+	expression = "AA!&"
+	variables = extractVariables(expression)
+	truth, _ = evaluateTruthTable(expression, variables)
+	fmt.Println("str:", expression, "; sat:", truth)
+	fmt.Println()
+
+	expression = "AA^"
+	variables = extractVariables(expression)
+	truth, _ = evaluateTruthTable(expression, variables)
+	fmt.Println("str:", expression, "; sat:", truth)
 }

@@ -90,6 +90,30 @@ func main() {
 	if err != nil {
 		fmt.Println("Error:", err)
 	} else {
-		fmt.Printf("Result: %t\n", result)
+		fmt.Println(rpnExpression, "gives", result)
 	}
+	fmt.Println()
+	expr := "10&"
+	res, _ := evaluateLogicalRPN(expr)
+	fmt.Println(expr, "is", res)
+	fmt.Println()
+
+	expr = "10|"
+	res, _ = evaluateLogicalRPN(expr)
+	fmt.Println(expr, "is", res)
+	fmt.Println()
+
+	expr = "11>"
+	res, _ = evaluateLogicalRPN(expr)
+	fmt.Println(expr, "is", res)
+	fmt.Println()
+
+	expr = "10="
+	res, _ = evaluateLogicalRPN(expr)
+	fmt.Println(expr, "is", res)
+	fmt.Println()
+
+	expr = "1011||="
+	res, _ = evaluateLogicalRPN(expr)
+	fmt.Println(expr, "is", res)
 }

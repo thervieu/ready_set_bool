@@ -231,5 +231,33 @@ func main() {
 	}
 	formula := os.Args[1]
 	cnf := ConjunctiveNormalForm(formula)
-	fmt.Println("CNF:", cnf)
+	fmt.Println("str:", formula, "; CNF:", cnf)
+	fmt.Println()
+
+	formula = "AB&!"
+	fmt.Println("str:", formula, "; CNF:", ConjunctiveNormalForm(formula))
+	fmt.Println()
+
+	formula = "AB|!"
+	fmt.Println("str:", formula, "; CNF:", ConjunctiveNormalForm(formula))
+	fmt.Println()
+
+	formula = "AB|C&"
+	fmt.Println("str:", formula, "; CNF:", ConjunctiveNormalForm(formula))
+	fmt.Println()
+
+	formula = "AB|C|D|"
+	fmt.Println("str:", formula, "; CNF:", ConjunctiveNormalForm(formula))
+	fmt.Println()
+
+	formula = "AB&C&D&"
+	fmt.Println("str:", formula, "; CNF:", ConjunctiveNormalForm(formula))
+	fmt.Println()
+
+	formula = "AB&!C!|"
+	fmt.Println("str:", formula, "; CNF:", ConjunctiveNormalForm(formula))
+	fmt.Println()
+
+	formula = "AB|!C!&"
+	fmt.Println("str:", formula, "; CNF:", ConjunctiveNormalForm(formula))
 }

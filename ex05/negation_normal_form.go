@@ -187,5 +187,26 @@ func main() {
 	formula := os.Args[1]
 	nnf := NegationNormalForm(formula)
 	
-	fmt.Println("NNF:", nnf)
+	fmt.Println("str:", formula, "; NNF:", nnf)
+	fmt.Println()
+
+	formula = "AB&!"
+	fmt.Println("str:", formula, "; NNF:", NegationNormalForm(formula))
+	fmt.Println()
+
+	formula = "AB|!"
+	fmt.Println("str:", formula, "; NNF:", NegationNormalForm(formula))
+	fmt.Println()
+	
+	formula = "AB>"
+	fmt.Println("str:", formula, "; NNF:", NegationNormalForm(formula))
+	fmt.Println()
+
+	
+	formula = "AB="
+	fmt.Println("str:", formula, "; NNF:", NegationNormalForm(formula))
+	fmt.Println()
+
+	formula = "AB|C&!"
+	fmt.Println("str:", formula, "; NNF:", NegationNormalForm(formula))
 }
