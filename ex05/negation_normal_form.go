@@ -21,6 +21,9 @@ func NewAstNode(item string) *AstNode {
 }
 
 func (node *AstNode) ParseFormula(formula *string) {
+	if len(*formula) == 0 {
+		panic("formula is wrong")
+	}
 	operands := "!&|^>="
 	node.Item = string((*formula)[len(*formula)-1])
 	*formula = (*formula)[:len(*formula)-1]
@@ -129,6 +132,10 @@ func (node *AstNode) Clone() *AstNode {
 	return clone
 }
 
+func isUpper(char rune) bool {
+	return (char >= 'A' && char <= 'Z')
+}
+
 func (node *AstNode) Stringify() string {
 	expr := ""
 	if node.LeftLeaf != nil {
@@ -141,12 +148,34 @@ func (node *AstNode) Stringify() string {
 	return expr
 }
 
+func reduceDoubleNegation(nnf string) string {
+	for {
+		i := 0
+		for i < len(nnf) {
+			if isUpper(rune(nnf[i])) && (i+1 < len(nnf) && nnf[i+1] == '!') &&
+				(i+2 < len(nnf) && nnf[i+2] == '!') {
+				nnf = nnf[:i+1] + nnf[i+3:]
+				i = 0
+			}
+			i++
+		}
+		// break when string was not modified
+		if i == len(nnf) {
+			break
+		}
+	}
+	return nnf
+}
+
+
 func NegationNormalForm(formula string) string {
 	formulaStack := formula
 	root := NewAstNode("0")
 	root.ParseFormula(&formulaStack)
 	root.NegationNormalForm()
-	return root.Stringify()
+	nnf := root.Stringify()
+	nnf = reduceDoubleNegation(nnf)
+	return nnf
 }
 
 func main() {
@@ -157,5 +186,6 @@ func main() {
 
 	formula := os.Args[1]
 	nnf := NegationNormalForm(formula)
+	
 	fmt.Println("NNF:", nnf)
 }
