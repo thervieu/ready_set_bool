@@ -178,10 +178,26 @@ func NegationNormalForm(formula string) string {
 	return nnf
 }
 
+func isSpecial(c rune) bool {
+	return (c == '&' || c == '!' || c == '^' || c == '>' || c == '=')
+}
+
+func isValid(s string) bool {
+	for _, char := range s {
+		if !isUpper(char) && !isSpecial(char) {
+			return false
+		}
+	}
+	return true
+}
+
 func main() {
 	if len(os.Args) != 2 {
 		fmt.Println("Usage: program 'logical formula'")
 		return
+	}
+	if !isValid(os.Args[1]) {
+		fmt.Println("Usage: program string_to_evaluate")
 	}
 
 	formula := os.Args[1]
