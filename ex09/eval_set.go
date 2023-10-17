@@ -138,7 +138,6 @@ func (node *AstNode) NegationNormalForm() {
 
 func (node *AstNode) Compute(sets [][]int, superset []int) []int {
 	var result []int
-
 	if !strings.Contains("&|!", string(node.Item)) {
 		result = sets[int(byte(node.Item[0])-'A')]
 	} else if node.Item == "!" {
@@ -237,8 +236,36 @@ func main() {
 
 	sets = [][]int{
 		{0, 1, 2},
+		{3, 4, 2},
+		{3, 7, 2},
+	}
+	formula = "AB|C&"
+	result = EvalSet(formula, sets)
+	fmt.Println("formula", formula, "\nsets", sets, "\nResulting Set:", result)
+	fmt.Println()
+
+	sets = [][]int{
+		{0, 1, 2},
 	}
 	formula = "A!"
+	result = EvalSet(formula, sets)
+	fmt.Println("formula", formula, "\nsets", sets, "\nResulting Set:", result)
+	fmt.Println()
+
+	sets = [][]int{
+		{0, 1, 2},
+		{0, 1, 2},
+	}
+	formula = "AB!|"
+	result = EvalSet(formula, sets)
+	fmt.Println("formula", formula, "\nsets", sets, "\nResulting Set:", result)
+	fmt.Println()
+
+	sets = [][]int{
+		{0, 1, 2},
+		{3, 4, 5},
+	}
+	formula = "A!B&"
 	result = EvalSet(formula, sets)
 	fmt.Println("formula", formula, "\nsets", sets, "\nResulting Set:", result)
 }
